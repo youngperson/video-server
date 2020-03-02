@@ -93,7 +93,9 @@ func GetVideoInfo(vid string) (*defs.VideoInfo, error) {
 	}
 
 	var aid int
-	var name, dct string
+	var dct string
+	var name string
+
 	err = stmtOut.QueryRow(vid).Scan(&name, &aid, &dct)
 	if err != nil && err != sql.ErrNoRows {
 		return nil, err
@@ -116,4 +118,48 @@ func DeleteVideoInfo(vid string) error {
 	}
 	defer stmtDel.Close()
 	return nil
+}
+
+func AddNewComments(vid string, aid int, content string) error {
+	id, err := utils.NewUUID()
+	if err != nil {
+		return err
+	}
+
+	stmtIns, err := dbConn.Prepare("INSERT INTO comments(id, video_id, author_id, content) VALUES(?, ?, ?, ?)")
+	if err != nil {
+		return err
+	}
+
+	_, err = stmtIns.Exec(id, vid, aid, content)
+	if err != nil {
+		return err
+	}
+	defer stmtIns.Close()
+	return nil
+}
+
+// 时间段内的对某个视频的评论
+func ListComments(vid string, from, to int) ([]*defs.Comment, error) {
+	smtmOut, err := dbConn.Prepare(`SELECT comments.id, users.login_name, comments.content FROM comments
+	INNER JOIN users where comments.author_id = users.id
+	AND video_id = ? AND comments.time > FROM_UNIXTIME(?) AND comments.time <= FROM_UNIXTIME(?)`)
+
+	var res []*defs.Comment
+	rows, err := smtmOut.Query(vid, from, to)
+	if err != nil {
+		return res, err
+	}
+
+	for rows.Next() {
+		var id, name, content string
+		if err := rows.Scan(&id, &name, &content); err != nil {
+			return res, err
+		}
+
+		c := &defs.Comment{Id: id, VideoId: vid, Author: name, Content: content}
+		res = append(res, c)
+	}
+	defer smtmOut.Close()
+	return res, nil
 }
