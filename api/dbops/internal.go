@@ -17,7 +17,7 @@ func InserSession(sid string, ttl int64, uname string) error {
 		return err
 	}
 
-	_, err := stmIns.Exec(sid, ttlstr, uname)
+	_, err = stmIns.Exec(sid, ttlstr, uname)
 	if err != nil {
 		return err
 	}
@@ -40,9 +40,8 @@ func RetrieveSession(sid string) (*defs.SimpleSession, error) {
 		return nil, err
 	}
 
-	var ttlint int64
-	if res, ttlint := strconv.ParseInt(ttl, 10, 64); err == nil {
-		ss.TTL = res
+	if ttlint, _ := strconv.ParseInt(ttl, 10, 64); err == nil {
+		ss.TTL = ttlint
 		ss.Username = uname
 	} else {
 		return nil, err
