@@ -36,3 +36,12 @@ CREATE TABLE `comments` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8
 ```
+
+
+
+## 流控
+```
+使用channel实现bucket算法
+使用有buffer的channel，buffer的长度就是bucket的个数进行控制
+当bucket使用完了说明buffer也使用完了，当还有buffer说明bucket还有
+```
