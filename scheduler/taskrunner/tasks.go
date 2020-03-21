@@ -13,7 +13,7 @@ func deleteVideo(vid string) error {
 	err := os.Remove(VIDEO_PATH + vid)
 
 	if err != nil && !os.IsNotExist(err) {
-		log.Panicf("Deleting video error:%v", err)
+		log.Printf("Deleting video error:%v", err)
 		return err
 	}
 
