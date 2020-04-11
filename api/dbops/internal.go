@@ -54,6 +54,7 @@ func RetrieveSession(sid string) (*defs.SimpleSession, error) {
 func RetrieveAllSessions() (*sync.Map, error) {
 	m := &sync.Map{}
 	stmOut, err := dbConn.Prepare("SELECT * FROM sessions")
+	defer stmOut.Close()
 	if err != nil {
 		return nil, err
 	}
@@ -75,11 +76,11 @@ func RetrieveAllSessions() (*sync.Map, error) {
 		if ttl, err1 := strconv.ParseInt(ttlstr, 10, 64); err1 == nil {
 			ss := &defs.SimpleSession{Username: login_name, TTL: ttl}
 			m.Store(id, ss)
+			log.Printf("session id:%s, ttl:%d", id, ss.TTL)
 		} else {
 			return nil, err
 		}
 	}
-	defer stmOut.Close()
 	return m, nil
 }
 
