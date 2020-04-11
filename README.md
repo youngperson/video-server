@@ -60,4 +60,19 @@ timer->runner->read video_del_rec->exec->delete video from folder
 ## 层次划分
 ```
 每个结构的层次划分清晰，便于后续拆分
+
+web/  :8080   处理前端的操作，把web中的请求处理传递到api中去
+templates/    前端的页面、js、image
+build.sh      构建前端二进制8080的脚本
+api/  :8000   接收web的操作，进行处理
+scheduler/  :9001  操作视频删除
+streamserver/  :9000  操作视频上传
+```
+
+## build.sh
+```
+sh build.sh
+cd ~/code/bin/video_server_web_ui/
+./web
+浏览器访问http://127.0.0.1:8080/
 ```
