@@ -21,6 +21,6 @@ func videoDelRecHandler(w http.ResponseWriter, r *http.Request, p httprouter.Par
 		return
 	}
 
-	sendResponse(w, 200, "")
+	sendResponse(w, 200, "delete video successfully")
 	return
 }
