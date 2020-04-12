@@ -19,8 +19,10 @@ func RegisterHandler() *httprouter.Router {
 
 	router.POST("/api", apiHandler)
 
+	router.GET("/videos/:vid-id", proxyVideoHandler)
+
 	// 不让前端去跨域请求,包装一层,内部去请求
-	router.POST("/upload/:vid-id", proxyHandler)
+	router.POST("/upload/:vid-id", proxyUploadHandler)
 
 	router.ServeFiles("/statics/*filepath", http.Dir("./templates"))
 

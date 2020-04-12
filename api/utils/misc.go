@@ -8,8 +8,7 @@ import (
 	"net/http"
 	"strconv"
 	"time"
-
-	config "github.com/video-server"
+	"youngperson/config"
 )
 
 func NewUUID() (string, error) {

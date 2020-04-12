@@ -1,7 +1,6 @@
 package main
 
 import (
-	"html/template"
 	"io"
 	"io/ioutil"
 	"log"
@@ -11,12 +10,6 @@ import (
 
 	"github.com/julienschmidt/httprouter"
 )
-
-func testpageHandler(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	t, _ := template.ParseFiles("./videos/upload.html")
-
-	t.Execute(w, nil)
-}
 
 func stremHandler(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	vid := p.ByName("vid-id")
@@ -33,6 +26,13 @@ func stremHandler(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	http.ServeContent(w, r, "", time.Now(), video)
 
 	defer video.Close()
+}
+
+// 获取OSS上的视频
+func stremHandlerv2(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+	vid := p.ByName("vid-id")
+	targetUrl := "oss地址/path/" + vid
+	http.Redirect(w, r, targetUrl, 301)
 }
 
 func uploadHandler(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
@@ -65,4 +65,8 @@ func uploadHandler(w http.ResponseWriter, r *http.Request, p httprouter.Params) 
 
 	w.WriteHeader(http.StatusCreated)
 	io.WriteString(w, "upload successfully")
+}
+
+func uploadHandlerv2(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+	// 使用OSS的sdk进行上传视频文件
 }

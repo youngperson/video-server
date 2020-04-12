@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+	"youngperson/config"
 
 	"github.com/julienschmidt/httprouter"
 )
@@ -89,8 +90,14 @@ func apiHandler(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	defer r.Body.Close()
 }
 
-func proxyHandler(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	u, _ := url.Parse("http://127.0.0.1:9000/")    // 把URL中的域名替换为127.0.0.1:9000
+func proxyVideoHandler(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	u, _ := url.Parse("http://" + config.GetLbAddr() + ":9000/")
+	proxy := httputil.NewSingleHostReverseProxy(u) // 代理
+	proxy.ServeHTTP(w, r)
+}
+
+func proxyUploadHandler(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	u, _ := url.Parse("http://127.0.0.1:9000/")
 	proxy := httputil.NewSingleHostReverseProxy(u) // 代理
 	proxy.ServeHTTP(w, r)
 }

@@ -1,47 +1,13 @@
 # video-server
-## 数据库设计
+## 部署流程
 ```
-mysql5.8+
-
-CREATE TABLE `sessions` (
-  `session_id` tinytext NOT NULL,
-  `TTL` tinytext,
-  `login_name` text,
-   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8
-
-CREATE TABLE `users` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `login_name` varchar(64) DEFAULT NULL,
-  `pwd` text,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `login_name` (`login_name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8
-
-CREATE TABLE `video_info` (
-  `id` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
-  `author_id` int(10) DEFAULT NULL,
-  `name` text,
-  `display_ctime` text,
-  `create_time` datetime DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8
-
-CREATE TABLE `comments` (
-  `id` varchar(64) NOT NULL DEFAULT '',
-  `video_id` varchar(64) DEFAULT NULL,
-  `author_id` int(10) DEFAULT NULL,
-  `content` text,
-  `time` datetime DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8
-
-CREATE TABLE `video_del_rec` (
-  `video_id` varchar(64) NOT NULL DEFAULT '',
-  PRIMARY KEY (`video_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+1、修改连接数据库的地方,api/dbops/conn.go、scheduler/dbops/conn.go
+2、导入initdb.sql
+3、修改bin/conf.json，默认为127.0.0.0
+4、执行 sh buildprod.sh
+5、执行 sh deploy.sh
+6、访问浏览器 127.0.0.0:8080
 ```
-
 
 ## 删除视频流程
 ```
@@ -59,14 +25,16 @@ timer->runner->read video_del_rec->exec->delete video from folder
 
 ## 层次划分
 ```
-每个结构的层次划分清晰，便于后续拆分
+每个结构的层次划分清晰，便于后续拆分。
+像内部的后台系统可以按照这种拆分的思想去做
 
 web/  :8080   处理前端的操作，把web中的请求处理传递到api中去
 templates/    前端的页面、js、image
 build.sh      构建前端二进制8080的脚本
-api/  :8000   接收web的操作，进行处理
-scheduler/  :9001  操作视频删除
-streamserver/  :9000  操作视频上传
+api/  :8000   接收web的操作，进行处理(部署到内网即可,不需要对用户暴露)
+scheduler/  :9001  操作视频删除(部署到内网即可,不需要对用户暴露)
+streamserver/  :9000  操作上传视频、下载视频(部署到内网即可,不需要对用户暴露)
+vendor/       把公共的config放进去,省得到处copy
 ```
 
 ## build.sh

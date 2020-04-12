@@ -51,14 +51,28 @@ func GenerateNewSessionId(un string) string {
 
 func IsSessionExpired(sid string) (string, bool) {
 	ss, ok := sessionMap.Load(sid)
+	ct := nowInMilli()
 	if ok {
-		ct := nowInMilli()
 		if ss.(*defs.SimpleSession).TTL < ct {
 			deleteExpiredSesiion(sid)
 			return "", true
 		}
 
 		return ss.(*defs.SimpleSession).Username, false
+	} else {
+		// 这里是为了保持session的状态,请求每次到的LB不一样。->L1/L2，从db里面查出来放本地cache
+		// 大型网站的做法是把session的状态放到类似Redis中的缓存中去
+		ss, err := dbops.RetrieveSession(sid)
+		if err != nil || ss == nil {
+			return "", true
+		}
+		if ss.TTL < ct {
+			deleteExpiredSesiion(sid)
+			return "", true
+		}
+
+		sessionMap.Store(sid, ss)
+		return ss.Username, false
 	}
 
 	return "", true

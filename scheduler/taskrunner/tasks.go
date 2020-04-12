@@ -20,6 +20,11 @@ func deleteVideo(vid string) error {
 	return nil
 }
 
+func deleteVideov2(vid string) error {
+	// 这里删除OSS上的视频
+	return nil
+}
+
 func VideoClearDispatcher(dc dataChan) error {
 	res, err := dbops.ReadVideoDeletionRecord(3)
 	if err != nil {
