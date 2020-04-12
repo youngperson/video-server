@@ -127,14 +127,20 @@ func GetVideoInfo(vid string) (*defs.VideoInfo, error) {
 }
 
 func ListVideoInfo(uname string, from, to int) ([]*defs.VideoInfo, error) {
+	// stmtOut, err := dbConn.Prepare(`SELECT video_info.id, video_info.author_id, video_info.name, video_info.display_ctime FROM video_info
+	// 	INNER JOIN users ON video_info.author_id = users.id
+	// 	WHERE users.login_name=? AND video_info.create_time > FROM_UNIXTIME(?) AND video_info.create_time<=FROM_UNIXTIME(?)
+	// 	OREDER BY video_info.create_time DESC`)
+	// 当前版本的MySQL暂时不能使用datetime进行排序
 	stmtOut, err := dbConn.Prepare(`SELECT video_info.id, video_info.author_id, video_info.name, video_info.display_ctime FROM video_info
 		INNER JOIN users ON video_info.author_id = users.id
-		WHERE users.login_name=? AND video_info.create_time > FROM_UNIXTIME(?) AND video_info.create_time<=FROM_UNIXTIME(?)
-		OREDER BY video_info.create_time DESC`)
+		WHERE users.login_name=? AND video_info.create_time > FROM_UNIXTIME(?) AND video_info.create_time<=FROM_UNIXTIME(?)`)
+
 	var res []*defs.VideoInfo
 	if err != nil {
 		return res, err
 	}
+
 	rows, err := stmtOut.Query(uname, from, to)
 	if err != nil {
 		log.Printf("%s", err)
