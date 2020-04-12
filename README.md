@@ -7,6 +7,7 @@
 4、执行 sh buildprod.sh
 5、执行 sh deploy.sh
 6、访问浏览器 127.0.0.0:8080
+ps:执行的时候请进入到bin/下面,该下面videos/保存这视频资源
 ```
 
 ## 删除视频流程
@@ -37,10 +38,17 @@ streamserver/  :9000  操作上传视频、下载视频(部署到内网即可,�
 vendor/       把公共的config放进去,省得到处copy
 ```
 
-## build.sh
+## 延伸和优化
 ```
-sh build.sh
-cd ~/code/bin/video_server_web_ui/
-./web
-浏览器访问http://127.0.0.1:8080/
+ORM的抽象层
+更安全的请求参数校验
+logging
+细粒度，更健壮的流控
+基于容器的部署上云方案
+```
+
+## 待解决
+```
+scheduler无关删除视频文件的问题
+scheduler运行一段时间CPU飙高
 ```
